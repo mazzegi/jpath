@@ -82,9 +82,19 @@ func Set(in any, spath string, value any) error {
 	if err != nil {
 		return fmt.Errorf("query-value: %w", err)
 	}
-	if !rv.CanSet() {
-		return fmt.Errorf("cannot set %v", rv.String())
+	if rv.Kind() == reflect.Pointer {
+		rv = rv.Elem()
 	}
-	rv.Set(reflect.ValueOf(value))
+
+	if !rv.CanSet() {
+		return fmt.Errorf("cannot set %v (%s)", rv.String(), rv.Type())
+	}
+	setVal := reflect.ValueOf(value)
+	if !setVal.CanConvert(rv.Type()) {
+		return fmt.Errorf("cannot convert value of type %s to %s", setVal.Type().String(), rv.Type().String())
+	}
+	setValConv := setVal.Convert(rv.Type())
+
+	rv.Set(setValConv)
 	return nil
 }

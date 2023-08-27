@@ -9,7 +9,7 @@ func assertNoErr(t *testing.T, err error) {
 	if err == nil {
 		return
 	}
-	t.Fatalf("expect no-err; got %v", err)
+	t.Fatalf("expect no-err; got: %v", err)
 }
 
 func assertErr(t *testing.T, err error) {
