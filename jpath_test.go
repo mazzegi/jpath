@@ -1,6 +1,7 @@
 package jpath
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 )
@@ -42,9 +43,10 @@ type TT2 struct {
 }
 
 type TT3 struct {
-	H1 string
-	H2 int
-	M1 map[string]string
+	H1   string
+	H2   int
+	M1   map[string]string
+	TT2s []TT2
 }
 
 func TestQuery(t *testing.T) {
@@ -68,6 +70,11 @@ func TestQuery(t *testing.T) {
 					M1: map[string]string{
 						"cows": "are-flying",
 						"cats": "are-swimming",
+					},
+					TT2s: []TT2{
+						{
+							S1: []int{34, 35, 36},
+						},
 					},
 				},
 			},
@@ -124,6 +131,11 @@ func TestSet(t *testing.T) {
 						"cows": "are-flying",
 						"cats": "are-swimming",
 					},
+					TT2s: []TT2{
+						{
+							S1: []int{34, 35, 36},
+						},
+					},
 				},
 			},
 		},
@@ -137,7 +149,29 @@ func TestSet(t *testing.T) {
 	assertNoErr(t, err)
 	assertEqual(t, "hola", v.F1)
 
+	err = Set(&v, "T2/S2/1/TT2s/0/S1/2", 42)
+	assertNoErr(t, err)
+	assertEqual(t, 42, v.T2.S2[1].TT2s[0].S1[2])
+
 	// err = Set(&v, "T2/S2/1/M1/cats", "get milk")
 	// assertNoErr(t, err)
 	// assertEqual(t, "get milk", v.T2.S2[1].M1["cats"])
+}
+
+func TestMapValue(t *testing.T) {
+	m := map[string]string{
+		"k1": "v1",
+		"k2": "v2",
+	}
+
+	rv := reflect.ValueOf(m)
+	mrv1 := rv.MapIndex(reflect.ValueOf("k1"))
+	fmt.Printf("%s\n", mrv1.String())
+
+	if !mrv1.CanAddr() {
+		fmt.Printf("value cannot addr\n")
+	}
+	if !mrv1.CanSet() {
+		fmt.Printf("value cannot be set\n")
+	}
 }

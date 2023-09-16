@@ -59,6 +59,7 @@ func queryValue(in any, spath string) (reflect.Value, error) {
 			if isRVZero(crv) {
 				return reflect.Value{}, errors.Join(ErrNotFound, fmt.Errorf("no such map key %q", elt))
 			}
+
 		default:
 			return reflect.Value{}, errors.Join(ErrNotFound, fmt.Errorf("cannot query reflect-kind %T", kind))
 		}
