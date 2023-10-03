@@ -81,30 +81,30 @@ func TestQuery(t *testing.T) {
 		},
 	}
 
-	r, err := Query(v, "F1")
+	r, err := Query(v, "F1", false)
 	assertNoErr(t, err)
 	assertEqual(t, "a-string", r)
 
-	_, err = Query(v, "C1")
+	_, err = Query(v, "C1", false)
 	assertErr(t, err)
 
-	r, err = Query(v, "T2/G2")
+	r, err = Query(v, "T2/G2", false)
 	assertNoErr(t, err)
 	assertEqual(t, 433, r)
 
-	r, err = Query(v, "T2/G3")
+	r, err = Query(v, "T2/G3", false)
 	assertNoErr(t, err)
 	assertEqual(t, 12.433, r)
 
-	r, err = Query(v, "T2/S1/1")
+	r, err = Query(v, "T2/S1/1", false)
 	assertNoErr(t, err)
 	assertEqual(t, 3, r)
 
-	r, err = Query(v, "T2/S2/0/H1")
+	r, err = Query(v, "T2/S2/0/H1", false)
 	assertNoErr(t, err)
 	assertEqual(t, "h1-s", r)
 
-	r, err = Query(v, "T2/S2/1/M1/cats")
+	r, err = Query(v, "T2/S2/1/M1/cats", false)
 	assertNoErr(t, err)
 	assertEqual(t, "are-swimming", r)
 }
@@ -141,15 +141,15 @@ func TestSet(t *testing.T) {
 		},
 	}
 
-	err := Set(&v, "T2/S2/0/H2", 2)
+	err := Set(&v, "T2/S2/0/H2", 2, false)
 	assertNoErr(t, err)
 	assertEqual(t, 2, v.T2.S2[0].H2)
 
-	err = Set(&v, "F1", "hola")
+	err = Set(&v, "F1", "hola", false)
 	assertNoErr(t, err)
 	assertEqual(t, "hola", v.F1)
 
-	err = Set(&v, "T2/S2/1/TT2s/0/S1/2", 42)
+	err = Set(&v, "T2/S2/1/TT2s/0/S1/2", 42, false)
 	assertNoErr(t, err)
 	assertEqual(t, 42, v.T2.S2[1].TT2s[0].S1[2])
 

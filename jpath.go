@@ -18,7 +18,7 @@ func isRVZero(rv reflect.Value) bool {
 	return rv == zv
 }
 
-func queryValue(in any, spath string) (reflect.Value, error) {
+func queryValue(in any, spath string, indexStartsWithOne bool) (reflect.Value, error) {
 	path := strings.Split(spath, "/")
 	crv := reflect.ValueOf(in)
 	for _, elt := range path {
@@ -44,6 +44,10 @@ func queryValue(in any, spath string) (reflect.Value, error) {
 			if err != nil {
 				return reflect.Value{}, errors.Join(ErrBadArgs, fmt.Errorf("cannot parse %q as int for slice index: %w", elt, err))
 			}
+			if indexStartsWithOne {
+				ix = ix - 1
+			}
+
 			if ix < 0 {
 				return reflect.Value{}, errors.Join(ErrBadArgs, fmt.Errorf("invalid slice index %d", ix))
 			}
@@ -67,19 +71,19 @@ func queryValue(in any, spath string) (reflect.Value, error) {
 	return crv, nil
 }
 
-func Query(in any, spath string) (any, error) {
-	rv, err := queryValue(in, spath)
+func Query(in any, spath string, indexStartsWithOne bool) (any, error) {
+	rv, err := queryValue(in, spath, indexStartsWithOne)
 	if err != nil {
 		return nil, fmt.Errorf("query-value: %w", err)
 	}
 	return rv.Interface(), nil
 }
 
-func Set(in any, spath string, value any) error {
+func Set(in any, spath string, value any, indexStartsWithOne bool) error {
 	if reflect.TypeOf(in).Kind() != reflect.Pointer {
 		return fmt.Errorf("cannot set non-pointer type")
 	}
-	rv, err := queryValue(in, spath)
+	rv, err := queryValue(in, spath, indexStartsWithOne)
 	if err != nil {
 		return fmt.Errorf("query-value: %w", err)
 	}
